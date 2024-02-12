@@ -61,7 +61,7 @@ class _GameBoardState extends State<GameBoard> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Game Over'),
+        title: const Text('Game Over'),
         content: Text('Your Score is: $currentScore'),
         actions: [
           TextButton(
@@ -69,7 +69,7 @@ class _GameBoardState extends State<GameBoard> {
                 resetGame();
                 Navigator.pop(context);
               },
-              child: Text('Play Again'))
+              child: const Text('Play Again'))
         ],
       ),
     );
@@ -212,18 +212,15 @@ class _GameBoardState extends State<GameBoard> {
                 if (currentPiece.position.contains(index)) {
                   return Pixel(
                     color: currentPiece.color,
-                    child: index,
                   );
                 } else if (gameBoard[row][col] != null) {
                   final Tetromino? type = gameBoard[row][col];
                   return Pixel(
                     color: type?.color,
-                    child: index,
                   );
                 } else {
                   return Pixel(
                     color: Colors.grey[900],
-                    child: index,
                   );
                 }
               },
@@ -231,7 +228,7 @@ class _GameBoardState extends State<GameBoard> {
           ),
           Text(
             'Score: $currentScore',
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 50, bottom: 50),
@@ -241,17 +238,17 @@ class _GameBoardState extends State<GameBoard> {
                 IconButton(
                   onPressed: moveLeft,
                   color: Colors.white,
-                  icon: Icon(Icons.arrow_back_ios_new_rounded),
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded),
                 ),
                 IconButton(
                   onPressed: rotateRight,
                   color: Colors.white,
-                  icon: Icon(Icons.rotate_right),
+                  icon: const Icon(Icons.rotate_right),
                 ),
                 IconButton(
                   onPressed: moveRight,
                   color: Colors.white,
-                  icon: Icon(Icons.arrow_forward_ios_rounded),
+                  icon: const Icon(Icons.arrow_forward_ios_rounded),
                 ),
               ],
             ),

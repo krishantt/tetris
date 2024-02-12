@@ -9,7 +9,7 @@ class Piece {
   List<int> position = [];
 
   Color get color {
-    return type.color ?? Colors.white;
+    return type.color;
   }
 
   void initializePiece() {

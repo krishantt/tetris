@@ -22,8 +22,10 @@ class GameBoard extends StatefulWidget {
 }
 
 class _GameBoardState extends State<GameBoard> {
-  Piece currentPiece = Piece(type: Tetromino.T);
+  Piece currentPiece = Piece(type: Tetromino.L);
 
+  int currentScore = 0;
+  bool gameOver = false;
   @override
   void initState() {
     super.initState();
@@ -43,11 +45,56 @@ class _GameBoardState extends State<GameBoard> {
       frameRate,
       (timer) {
         setState(() {
+          clearLines();
           checkLanding();
+          if (gameOver) {
+            timer.cancel();
+            showGameOverDialog();
+          }
           currentPiece.movePiece(Direction.down);
         });
       },
     );
+  }
+
+  void showGameOverDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Game Over'),
+        content: Text('Your Score is: $currentScore'),
+        actions: [
+          TextButton(
+              onPressed: () {
+                resetGame();
+                Navigator.pop(context);
+              },
+              child: Text('Play Again'))
+        ],
+      ),
+    );
+  }
+
+  void resetGame() {
+    gameBoard = List.generate(
+      colLength,
+      (i) => List.generate(
+        rowLength,
+        (j) => null,
+      ),
+    );
+    gameOver = false;
+    currentScore = 0;
+    startGame();
+  }
+
+  bool isGameOver() {
+    for (int col = 0; col < rowLength; col++) {
+      if (gameBoard[0][col] != null) {
+        return true;
+      }
+    }
+    return false;
   }
 
   bool checkCollision(Direction direction) {
@@ -101,6 +148,10 @@ class _GameBoardState extends State<GameBoard> {
         Tetromino.values[rand.nextInt(Tetromino.values.length)];
     currentPiece = Piece(type: randomType);
     currentPiece.initializePiece();
+
+    if (isGameOver()) {
+      gameOver = true;
+    }
   }
 
   void moveLeft() {
@@ -119,7 +170,30 @@ class _GameBoardState extends State<GameBoard> {
     }
   }
 
-  void rotateRight() {}
+  void rotateRight() {
+    setState(() {
+      currentPiece.rotatePiece();
+    });
+  }
+
+  void clearLines() {
+    for (int row = colLength - 1; row >= 0; row--) {
+      bool rowIsFull = true;
+      for (int col = 0; col < rowLength; col++) {
+        if (gameBoard[row][col] == null) {
+          rowIsFull = false;
+          break;
+        }
+      }
+      if (rowIsFull) {
+        for (int r = row; r > 0; r--) {
+          gameBoard[r] = List.from(gameBoard[r - 1]);
+        }
+        gameBoard[0] = List.generate(row, (index) => null);
+        currentScore += rowLength;
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -155,8 +229,12 @@ class _GameBoardState extends State<GameBoard> {
               },
             ),
           ),
+          Text(
+            'Score: $currentScore',
+            style: TextStyle(color: Colors.white),
+          ),
           Padding(
-            padding: const EdgeInsets.all(50.0),
+            padding: const EdgeInsets.only(top: 50, bottom: 50),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
